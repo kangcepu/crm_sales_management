@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('stores', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('erp_store_id')->nullable();
+            $table->string('store_code')->unique();
+            $table->string('store_name');
+            $table->enum('store_type', ['CONSIGNMENT', 'REGULAR']);
+            $table->string('owner_name');
+            $table->string('phone');
+            $table->boolean('is_active')->default(true);
+            $table->dateTime('created_at')->useCurrent();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('stores');
+    }
+};
