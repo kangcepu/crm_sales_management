@@ -7,8 +7,8 @@
         $settings = \App\Models\Setting::allKeyed();
         $siteTitle = $settings['site_title'] ?? 'CR Sales';
         $siteDescription = $settings['site_description'] ?? 'Enterprise CRM System';
-        $siteLogo = $settings['site_logo'] ?? null;
-        $siteFavicon = $settings['site_favicon'] ?? null;
+        $siteLogo = \App\Models\Setting::resolveMediaUrl($settings['site_logo'] ?? null);
+        $siteFavicon = \App\Models\Setting::resolveMediaUrl($settings['site_favicon'] ?? null);
     @endphp
     <title>{{ $siteTitle }}</title>
     @if($siteFavicon)

@@ -50,26 +50,38 @@ class ReportViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final position = await _locationService.getCurrentPosition();
       final storeLat = selectedStore?.address?.latitude;
       final storeLng = selectedStore?.address?.longitude;
-      double? distance;
-      if (position != null && storeLat != null && storeLng != null) {
-        distance = _locationService.distanceBetween(position.latitude, position.longitude, storeLat, storeLng);
-        if (distance > ApiConfig.locationToleranceMeters) {
-          message = 'Location out of range (${distance.toStringAsFixed(1)} m)';
-          isBusy = false;
-          notifyListeners();
-          return false;
-        }
+      if (storeLat == null || storeLng == null) {
+        message = 'Store location not set by admin';
+        isBusy = false;
+        notifyListeners();
+        return false;
+      }
+
+      final locationResult = await _locationService.getVerifiedPosition();
+      if (!locationResult.isValid) {
+        message = locationResult.error ?? 'Location unavailable';
+        isBusy = false;
+        notifyListeners();
+        return false;
+      }
+
+      final position = locationResult.position!;
+      final distance = _locationService.distanceBetween(position.latitude, position.longitude, storeLat, storeLng);
+      if (distance > ApiConfig.locationToleranceMeters) {
+        message = 'Location out of range (${distance.toStringAsFixed(1)} m)';
+        isBusy = false;
+        notifyListeners();
+        return false;
       }
 
       final visitPayload = {
         'store_id': selectedStore!.id,
         'user_id': userId,
         'visit_at': DateTime.now().toIso8601String(),
-        'latitude': position?.latitude,
-        'longitude': position?.longitude,
+        'latitude': position.latitude,
+        'longitude': position.longitude,
         'distance_from_store': distance,
         'visit_status': 'ON_TIME',
         'summary': summary,

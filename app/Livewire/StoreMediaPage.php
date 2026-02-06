@@ -74,7 +74,7 @@ class StoreMediaPage extends Component
             $before = $media->getOriginal();
             if ($this->upload) {
                 $path = $this->upload->store('store-media', 'media');
-                $payload['media_url'] = url('media/'.$path);
+                $payload['media_url'] = $path;
                 $payload['media_type'] = $this->resolveMediaType($this->upload->getMimeType(), $payload['media_type'] ?? null);
             }
             $media->fill($payload);
@@ -88,7 +88,7 @@ class StoreMediaPage extends Component
         } else {
             foreach ($this->uploads as $file) {
                 $path = $file->store('store-media', 'media');
-                $url = url('media/'.$path);
+                $url = $path;
                 $mediaType = $this->resolveMediaType($file->getMimeType(), $payload['media_type'] ?? null);
                 $media = StoreMedia::create([
                     'visit_id' => $payload['visit_id'],

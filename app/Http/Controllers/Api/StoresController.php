@@ -10,9 +10,17 @@ use Illuminate\Validation\Rule;
 
 class StoresController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Store::with(['address', 'area'])->orderByDesc('created_at')->get();
+        $query = Store::with(['address', 'area'])->orderByDesc('created_at');
+        $user = $request->user();
+
+        if ($user && !$user->hasPermission('stores.manage')) {
+            $storeIds = $user->storeAssignments()->pluck('store_id');
+            $query->whereIn('id', $storeIds);
+        }
+
+        return $query->get();
     }
 
     public function store(Request $request)
@@ -40,8 +48,15 @@ class StoresController extends Controller
         return response()->json($store->load(['address', 'area']), 201);
     }
 
-    public function show(Store $store)
+    public function show(Request $request, Store $store)
     {
+        $user = $request->user();
+        if ($user && !$user->hasPermission('stores.manage')) {
+            $assigned = $user->storeAssignments()->where('store_id', $store->id)->exists();
+            if (!$assigned) {
+                return response()->json(['message' => 'Forbidden'], 403);
+            }
+        }
         return $store->load(['address', 'area']);
     }
 

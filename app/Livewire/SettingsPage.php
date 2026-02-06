@@ -40,12 +40,12 @@ class SettingsPage extends Component
 
         if ($this->logo_upload) {
             $path = $this->logo_upload->store('settings', 'media');
-            Setting::setValue('site_logo', url('media/'.$path));
+            Setting::setValue('site_logo', $path);
         }
 
         if ($this->favicon_upload) {
             $path = $this->favicon_upload->store('settings', 'media');
-            Setting::setValue('site_favicon', url('media/'.$path));
+            Setting::setValue('site_favicon', $path);
         }
 
         session()->flash('message', 'Settings updated');
@@ -54,8 +54,8 @@ class SettingsPage extends Component
     public function render()
     {
         return view('livewire.settings-page', [
-            'currentLogo' => Setting::getValue('site_logo'),
-            'currentFavicon' => Setting::getValue('site_favicon')
+            'currentLogo' => Setting::resolveMediaUrl(Setting::getValue('site_logo')),
+            'currentFavicon' => Setting::resolveMediaUrl(Setting::getValue('site_favicon'))
         ])->layout('layouts.app', [
             'title' => 'Settings',
             'subtitle' => 'Kelola identitas aplikasi.'

@@ -29,7 +29,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('roles', RolesController::class)->middleware('permission:roles.manage');
     Route::apiResource('areas', AreasController::class)->middleware('permission:areas.manage');
 
-    Route::apiResource('stores', StoresController::class)->middleware('permission:stores.manage');
+    Route::get('stores', [StoresController::class, 'index']);
+    Route::get('stores/{store}', [StoresController::class, 'show']);
+    Route::post('stores', [StoresController::class, 'store'])->middleware('permission:stores.manage');
+    Route::put('stores/{store}', [StoresController::class, 'update'])->middleware('permission:stores.manage');
+    Route::delete('stores/{store}', [StoresController::class, 'destroy'])->middleware('permission:stores.manage');
     Route::apiResource('store-addresses', StoreAddressesController::class)->middleware('permission:stores.manage');
     Route::get('store-assignments', [StoreAssignmentsController::class, 'index'])->middleware('permission:assignments.manage');
     Route::post('store-assignments', [StoreAssignmentsController::class, 'store'])->middleware('permission:assignments.manage');

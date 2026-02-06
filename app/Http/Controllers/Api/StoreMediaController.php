@@ -34,7 +34,7 @@ class StoreMediaController extends Controller
             $items = [];
             foreach ($files as $file) {
                 $path = $file->store('store-media', 'media');
-                $url = url('media/'.$path);
+                $url = $path;
                 $mediaType = $this->resolveMediaType($file->getMimeType(), $data['media_type'] ?? null);
                 $item = StoreMedia::create([
                     'visit_id' => $data['visit_id'],
@@ -88,7 +88,7 @@ class StoreMediaController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $path = $file->store('store-media', 'media');
-            $payload['media_url'] = url('media/'.$path);
+            $payload['media_url'] = $path;
             $payload['media_type'] = $this->resolveMediaType($file->getMimeType(), $payload['media_type'] ?? $storeMedia->media_type);
         }
 

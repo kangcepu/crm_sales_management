@@ -31,6 +31,14 @@ class _ReportPageState extends State<ReportPage> {
   final picker = ImagePicker();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ReportViewModel>().loadStores();
+    });
+  }
+
+  @override
   void dispose() {
     summaryController.dispose();
     nextPlanController.dispose();

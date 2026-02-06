@@ -119,7 +119,7 @@ class StoreVisitReportsController extends Controller
 
         foreach ($files as $file) {
             $path = $file->store('report-media', 'media');
-            $url = url('media/'.$path);
+            $url = $path;
             $mediaType = $this->resolveMediaType($file->getMimeType(), null);
             $items[] = StoreVisitReportMedia::create([
                 'report_id' => $report->id,
