@@ -153,7 +153,7 @@ class StoresPage extends Component
 
     public function render()
     {
-        $query = Store::with(['address', 'area']);
+        $query = Store::with(['address', 'area', 'assignments.user']);
         if ($this->search) {
             $query->where('store_name', 'like', '%'.$this->search.'%')
                 ->orWhere('store_code', 'like', '%'.$this->search.'%');

@@ -14,6 +14,11 @@ class StoreAddress extends Model
 
     protected $fillable = [
         'store_id',
+        'country_id',
+        'province_id',
+        'city_id',
+        'district_id',
+        'village_id',
         'address',
         'city',
         'province',
@@ -29,5 +34,30 @@ class StoreAddress extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function province(): BelongsTo
+    {
+        return $this->belongsTo(Province::class);
+    }
+
+    public function cityRef(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
+    public function district(): BelongsTo
+    {
+        return $this->belongsTo(District::class);
+    }
+
+    public function village(): BelongsTo
+    {
+        return $this->belongsTo(Village::class);
     }
 }

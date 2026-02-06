@@ -131,14 +131,31 @@ class _ReportPageState extends State<ReportPage> {
             child: Column(
               children: [
                 DropdownButtonFormField<Store>(
-                  key: ValueKey(vm.selectedStore?.id ?? 'none'),
-                  initialValue: vm.selectedStore,
+                  value: vm.selectedStore,
                   items: vm.stores
-                      .map((store) => DropdownMenuItem(value: store, child: Text(store.storeName)))
+                      .map(
+                        (store) => DropdownMenuItem(
+                          value: store,
+                          child: Text(store.storeName, style: const TextStyle(color: AppColors.ink)),
+                        ),
+                      )
                       .toList(),
-                  onChanged: vm.selectStore,
+                  onChanged: vm.stores.isEmpty ? null : vm.selectStore,
+                  isExpanded: true,
+                  dropdownColor: Colors.white,
+                  style: const TextStyle(color: AppColors.ink),
                   decoration: const InputDecoration(labelText: 'Store'),
                 ),
+                if (vm.stores.isEmpty) ...[
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Belum ada toko. Hubungi admin.',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.muted),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
                 if (vm.selectedStore?.address?.latitude != null && vm.selectedStore?.address?.longitude != null)
                   Align(

@@ -23,12 +23,19 @@
                         @error('form.store_id') <span>{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
-                        <label class="label">Status</label>
-                        <select class="select" wire:model="form.status">
-                            <option value="ACTIVE">ACTIVE</option>
-                            <option value="INACTIVE">INACTIVE</option>
-                            <option value="CLOSED">CLOSED</option>
+                        <label class="label">Status Master</label>
+                        <select class="select" wire:model="form.store_status_id">
+                            <option value="">Select status</option>
+                            @foreach($statuses as $status)
+                                <option value="{{ $status->id }}">{{ $status->code }} - {{ $status->name }}</option>
+                            @endforeach
                         </select>
+                        @error('form.store_status_id') <span>{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Status Code</label>
+                        <input class="input" type="text" wire:model="form.status" placeholder="ACTIVE">
+                        @error('form.status') <span>{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
                         <label class="label">Changed By</label>
@@ -75,7 +82,7 @@
                 @foreach($items as $item)
                     <tr>
                         <td>{{ $item->store?->store_name }}</td>
-                        <td>{{ $item->status }}</td>
+                        <td>{{ $item->statusRef?->name ?? $item->status }}</td>
                         <td>{{ $item->changedBy?->full_name }}</td>
                         <td>{{ $item->changed_at }}</td>
                         <td>

@@ -4,27 +4,36 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\StoreCondition;
+use App\Models\StoreConditionType;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class StoreConditionsController extends Controller
 {
     public function index()
     {
-        return StoreCondition::with('visit.store')->orderByDesc('id')->get();
+        return StoreCondition::with(['visit.store', 'conditionType'])->orderByDesc('id')->get();
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'visit_id' => 'required|exists:store_visits,id',
-            'exterior_condition' => ['required', Rule::in(['GOOD', 'FAIR', 'BAD'])],
-            'interior_condition' => ['required', Rule::in(['GOOD', 'FAIR', 'BAD'])],
+            'condition_type_id' => 'nullable|exists:store_condition_types,id',
+            'exterior_condition' => 'required|string|max:50',
+            'interior_condition' => 'required|string|max:50',
             'display_quality' => 'required|string|max:255',
             'cleanliness' => 'required|string|max:255',
             'shelf_availability' => 'required|string|max:255',
-            'overall_status' => ['required', Rule::in(['ACTIVE', 'RISK', 'POTENTIAL', 'DROPPED'])]
+            'overall_status' => 'nullable|string|max:50'
         ]);
+
+        if (!empty($data['condition_type_id'])) {
+            $type = StoreConditionType::find($data['condition_type_id']);
+            $data['overall_status'] = $type?->code;
+        }
+        if (empty($data['overall_status'])) {
+            return response()->json(['message' => 'Overall status required'], 422);
+        }
 
         $condition = StoreCondition::create($data);
 
@@ -33,20 +42,29 @@ class StoreConditionsController extends Controller
 
     public function show(StoreCondition $storeCondition)
     {
-        return $storeCondition->load('visit.store');
+        return $storeCondition->load(['visit.store', 'conditionType']);
     }
 
     public function update(Request $request, StoreCondition $storeCondition)
     {
         $data = $request->validate([
             'visit_id' => 'required|exists:store_visits,id',
-            'exterior_condition' => ['required', Rule::in(['GOOD', 'FAIR', 'BAD'])],
-            'interior_condition' => ['required', Rule::in(['GOOD', 'FAIR', 'BAD'])],
+            'condition_type_id' => 'nullable|exists:store_condition_types,id',
+            'exterior_condition' => 'required|string|max:50',
+            'interior_condition' => 'required|string|max:50',
             'display_quality' => 'required|string|max:255',
             'cleanliness' => 'required|string|max:255',
             'shelf_availability' => 'required|string|max:255',
-            'overall_status' => ['required', Rule::in(['ACTIVE', 'RISK', 'POTENTIAL', 'DROPPED'])]
+            'overall_status' => 'nullable|string|max:50'
         ]);
+
+        if (!empty($data['condition_type_id'])) {
+            $type = StoreConditionType::find($data['condition_type_id']);
+            $data['overall_status'] = $type?->code;
+        }
+        if (empty($data['overall_status'])) {
+            return response()->json(['message' => 'Overall status required'], 422);
+        }
 
         $storeCondition->update($data);
 

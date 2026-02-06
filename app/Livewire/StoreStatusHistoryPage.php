@@ -3,10 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Store;
+use App\Models\StoreStatus;
 use App\Models\StoreStatusHistory;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,6 +16,7 @@ class StoreStatusHistoryPage extends Component
 
     public $form = [
         'store_id' => '',
+        'store_status_id' => '',
         'status' => 'ACTIVE',
         'note' => '',
         'changed_by_user_id' => '',
@@ -29,7 +30,8 @@ class StoreStatusHistoryPage extends Component
     {
         return [
             'form.store_id' => 'required|exists:stores,id',
-            'form.status' => ['required', Rule::in(['ACTIVE', 'INACTIVE', 'CLOSED'])],
+            'form.store_status_id' => 'nullable|exists:store_statuses,id',
+            'form.status' => 'nullable|string|max:50',
             'form.note' => 'nullable|string',
             'form.changed_by_user_id' => 'required|exists:users,id',
             'form.changed_at' => 'required|date'
@@ -48,6 +50,7 @@ class StoreStatusHistoryPage extends Component
         $this->editingId = $id;
         $this->form = [
             'store_id' => $history->store_id,
+            'store_status_id' => $history->store_status_id,
             'status' => $history->status,
             'note' => $history->note,
             'changed_by_user_id' => $history->changed_by_user_id,
@@ -59,6 +62,14 @@ class StoreStatusHistoryPage extends Component
     public function save()
     {
         $data = $this->validate();
+        if (!empty($data['form']['store_status_id'])) {
+            $status = StoreStatus::find($data['form']['store_status_id']);
+            $data['form']['status'] = $status?->code;
+        }
+        if (empty($data['form']['status'])) {
+            $this->addError('form.status', 'Status required');
+            return;
+        }
         if ($this->editingId) {
             $history = StoreStatusHistory::findOrFail($this->editingId);
             $history->update($data['form']);
@@ -84,6 +95,7 @@ class StoreStatusHistoryPage extends Component
     {
         $this->form = [
             'store_id' => '',
+            'store_status_id' => '',
             'status' => 'ACTIVE',
             'note' => '',
             'changed_by_user_id' => auth()->id() ?? '',
@@ -106,6 +118,7 @@ class StoreStatusHistoryPage extends Component
     {
         return view('livewire.store-status-history-page', [
             'items' => StoreStatusHistory::with(['store', 'changedBy'])->orderByDesc('changed_at')->paginate(10),
+            'statuses' => StoreStatus::orderBy('name')->get(),
             'stores' => Store::orderBy('store_name')->get(),
             'users' => User::orderBy('full_name')->get()
         ])->layout('layouts.app', ['title' => 'Store Status History']);

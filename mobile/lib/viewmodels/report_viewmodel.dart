@@ -22,7 +22,24 @@ class ReportViewModel extends ChangeNotifier {
 
   Future<void> loadStores() async {
     try {
-      stores = await _storeService.fetchStores();
+      final fetched = await _storeService.fetchStores();
+      final unique = <int, Store>{};
+      for (final store in fetched) {
+        unique[store.id] = store;
+      }
+      stores = unique.values.toList();
+      if (selectedStore != null) {
+        final match = stores.where((item) => item.id == selectedStore!.id).toList();
+        if (match.isNotEmpty) {
+          selectedStore = match.first;
+        } else if (stores.isNotEmpty) {
+          selectedStore = stores.first;
+        } else {
+          selectedStore = null;
+        }
+      } else if (stores.isNotEmpty) {
+        selectedStore = stores.first;
+      }
     } catch (_) {}
     notifyListeners();
   }
@@ -69,12 +86,7 @@ class ReportViewModel extends ChangeNotifier {
 
       final position = locationResult.position!;
       final distance = _locationService.distanceBetween(position.latitude, position.longitude, storeLat, storeLng);
-      if (distance > ApiConfig.locationToleranceMeters) {
-        message = 'Location out of range (${distance.toStringAsFixed(1)} m)';
-        isBusy = false;
-        notifyListeners();
-        return false;
-      }
+      final visitStatus = distance > ApiConfig.locationToleranceMeters ? 'OUT_OF_RANGE' : 'ON_TIME';
 
       final visitPayload = {
         'store_id': selectedStore!.id,
@@ -83,7 +95,7 @@ class ReportViewModel extends ChangeNotifier {
         'latitude': position.latitude,
         'longitude': position.longitude,
         'distance_from_store': distance,
-        'visit_status': 'ON_TIME',
+        'visit_status': visitStatus,
         'summary': summary,
         'next_visit_plan': nextVisitPlan,
       };
@@ -100,7 +112,9 @@ class ReportViewModel extends ChangeNotifier {
       final fields = Map<String, dynamic>.from(reportPayload);
       fields['visit_id'] = visitId;
       await _reportService.createReport(fields, mediaItems);
-      message = 'Report saved';
+      message = visitStatus == 'OUT_OF_RANGE'
+          ? 'Report saved (Out of Range: ${distance.toStringAsFixed(1)} m)'
+          : 'Report saved';
       isBusy = false;
       notifyListeners();
       return true;

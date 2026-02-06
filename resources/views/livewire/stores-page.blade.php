@@ -117,6 +117,8 @@
                     <th>Area</th>
                     <th>Type</th>
                     <th>Owner</th>
+                    <th>Sales PIC</th>
+                    <th>Marketing PIC</th>
                     <th>Phone</th>
                     <th>Status</th>
                     <th></th>
@@ -124,12 +126,28 @@
             </thead>
             <tbody>
                 @foreach($items as $item)
+                    @php
+                        $salesNames = $item->assignments
+                            ->where('assignment_role', 'SALES')
+                            ->pluck('user.full_name')
+                            ->filter()
+                            ->unique()
+                            ->values();
+                        $marketingNames = $item->assignments
+                            ->where('assignment_role', 'MARKETING')
+                            ->pluck('user.full_name')
+                            ->filter()
+                            ->unique()
+                            ->values();
+                    @endphp
                     <tr>
                         <td>{{ $item->store_name }}</td>
                         <td>{{ $item->store_code }}</td>
                         <td>{{ $item->area?->area_name }}</td>
                         <td>{{ $item->store_type }}</td>
                         <td>{{ $item->owner_name }}</td>
+                        <td>{{ $salesNames->isEmpty() ? '-' : $salesNames->implode(', ') }}</td>
+                        <td>{{ $marketingNames->isEmpty() ? '-' : $marketingNames->implode(', ') }}</td>
                         <td>{{ $item->phone }}</td>
                         <td>{{ $item->is_active ? 'Active' : 'Inactive' }}</td>
                         <td>

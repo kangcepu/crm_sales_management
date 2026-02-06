@@ -14,7 +14,7 @@
     @if($siteFavicon)
         <link rel="icon" href="{{ $siteFavicon }}">
     @endif
-    <link rel="stylesheet" href="{{ asset('app.css') }}">
+    <link rel="stylesheet" href="{{ asset('app.css') }}?v={{ filemtime(public_path('app.css')) }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     @livewireStyles
 </head>
@@ -25,12 +25,17 @@
     @endphp
     <aside class="sidebar">
         <div class="brand">
-            @if($siteLogo)
-                <img class="brand-logo" src="{{ $siteLogo }}" alt="{{ $siteTitle }}">
-            @else
+            <div class="brand-mark">
+                @if($siteLogo)
+                    <img class="brand-logo" src="{{ $siteLogo }}" alt="{{ $siteTitle }}">
+                @else
+                    <div class="brand-initial">{{ strtoupper(substr($siteTitle ?? 'C', 0, 1)) }}</div>
+                @endif
+            </div>
+            <div class="brand-text">
                 <div class="brand-name">{{ $siteTitle }}</div>
-            @endif
-            <div class="brand-sub">{{ $siteDescription }}</div>
+                <div class="brand-sub">{{ $siteDescription }}</div>
+            </div>
         </div>
         <div class="nav-section">
             <div class="nav-label">Main Menu</div>
@@ -233,6 +238,22 @@
                 @endif
             </div>
             <div class="topbar-right">
+                <div class="topbar-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="M20 20l-3.5-3.5"/>
+                    </svg>
+                    <input type="text" placeholder="Global search...">
+                </div>
+                <button class="theme-toggle" type="button" data-theme-toggle>
+                    <svg class="theme-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+                    </svg>
+                    <svg class="theme-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>
+                    </svg>
+                </button>
                 <div class="topbar-avatar">
                     @if($user?->profile_photo_url)
                         <img src="{{ $user->profile_photo_url }}" alt="{{ $user?->full_name }}">
@@ -259,6 +280,27 @@
 @livewireScripts
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+function initThemeToggle() {
+    if (window.__themeInit) {
+        return
+    }
+    window.__themeInit = true
+    const stored = localStorage.getItem('cr_theme')
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    const startDark = stored ? stored === 'dark' : prefersDark
+    document.body.classList.toggle('theme-dark', startDark)
+
+    document.addEventListener('click', function (event) {
+        const toggle = event.target.closest('[data-theme-toggle]')
+        if (!toggle) {
+            return
+        }
+        const nextDark = !document.body.classList.contains('theme-dark')
+        document.body.classList.toggle('theme-dark', nextDark)
+        localStorage.setItem('cr_theme', nextDark ? 'dark' : 'light')
+    })
+}
+
 let storeMap
 let storeMarker
 
@@ -318,8 +360,14 @@ function initStoreMap() {
     lngInput?.addEventListener('change', syncFromInputs)
 }
 
-document.addEventListener('DOMContentLoaded', initStoreMap)
-document.addEventListener('livewire:navigated', initStoreMap)
+document.addEventListener('DOMContentLoaded', function () {
+    initThemeToggle()
+    initStoreMap()
+})
+document.addEventListener('livewire:navigated', function () {
+    initThemeToggle()
+    initStoreMap()
+})
 window.addEventListener('store-map:set', function (event) {
     initStoreMap()
     if (!storeMap) {

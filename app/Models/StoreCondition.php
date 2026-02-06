@@ -14,6 +14,7 @@ class StoreCondition extends Model
 
     protected $fillable = [
         'visit_id',
+        'condition_type_id',
         'exterior_condition',
         'interior_condition',
         'display_quality',
@@ -25,5 +26,10 @@ class StoreCondition extends Model
     public function visit(): BelongsTo
     {
         return $this->belongsTo(StoreVisit::class, 'visit_id');
+    }
+
+    public function conditionType(): BelongsTo
+    {
+        return $this->belongsTo(StoreConditionType::class, 'condition_type_id');
     }
 }

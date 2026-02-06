@@ -1,7 +1,29 @@
+import 'dart:io';
 import 'package:geolocator/geolocator.dart';
 import '../core/api_config.dart';
 
 class LocationService {
+  LocationSettings _settings() {
+    final base = LocationSettings(
+      accuracy: LocationAccuracy.best,
+      timeLimit: Duration(seconds: ApiConfig.locationTimeoutSeconds),
+    );
+    if (Platform.isAndroid) {
+      return AndroidSettings(
+        accuracy: LocationAccuracy.best,
+        timeLimit: Duration(seconds: ApiConfig.locationTimeoutSeconds),
+        forceLocationManager: true,
+      );
+    }
+    if (Platform.isIOS) {
+      return AppleSettings(
+        accuracy: LocationAccuracy.best,
+        timeLimit: Duration(seconds: ApiConfig.locationTimeoutSeconds),
+      );
+    }
+    return base;
+  }
+
   Future<Position?> getCurrentPosition() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -17,12 +39,7 @@ class LocationService {
     }
 
     try {
-      return await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
-          accuracy: LocationAccuracy.best,
-          timeLimit: Duration(seconds: ApiConfig.locationTimeoutSeconds),
-        ),
-      );
+      return await Geolocator.getCurrentPosition(locationSettings: _settings());
     } catch (_) {
       return null;
     }
@@ -43,12 +60,7 @@ class LocationService {
     }
 
     try {
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
-          accuracy: LocationAccuracy.best,
-          timeLimit: Duration(seconds: ApiConfig.locationTimeoutSeconds),
-        ),
-      );
+      final position = await Geolocator.getCurrentPosition(locationSettings: _settings());
       if (position.isMocked) {
         return const LocationValidationResult(error: 'Fake GPS detected');
       }

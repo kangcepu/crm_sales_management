@@ -16,6 +16,7 @@ class StoreStatusHistory extends Model
 
     protected $fillable = [
         'store_id',
+        'store_status_id',
         'status',
         'note',
         'changed_by_user_id',
@@ -29,6 +30,11 @@ class StoreStatusHistory extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function statusRef(): BelongsTo
+    {
+        return $this->belongsTo(StoreStatus::class, 'store_status_id');
     }
 
     public function changedBy(): BelongsTo
