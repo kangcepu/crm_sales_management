@@ -29,4 +29,17 @@ class StoreConditionType extends Model
     {
         return $this->hasMany(StoreCondition::class, 'condition_type_id');
     }
+
+    public static function nextCode(): string
+    {
+        $prefix = 'COND-';
+        $max = static::where('code', 'like', $prefix.'%')
+            ->pluck('code')
+            ->map(function ($code) use ($prefix) {
+                return (int) substr($code, strlen($prefix));
+            })
+            ->max();
+        $next = $max ? $max + 1 : 1;
+        return $prefix . str_pad((string) $next, 3, '0', STR_PAD_LEFT);
+    }
 }

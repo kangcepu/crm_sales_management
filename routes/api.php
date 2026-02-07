@@ -10,6 +10,10 @@ use App\Http\Controllers\Api\StoreAddressesController;
 use App\Http\Controllers\Api\StoreAssignmentsController;
 use App\Http\Controllers\Api\StoreConditionsController;
 use App\Http\Controllers\Api\StoreMediaController;
+use App\Http\Controllers\Api\StoreStatusesController;
+use App\Http\Controllers\Api\StoreConditionTypesController;
+use App\Http\Controllers\Api\GoogleLocationsController;
+use App\Http\Controllers\Api\LocationsController;
 use App\Http\Controllers\Api\StoreStatusHistoryController;
 use App\Http\Controllers\Api\StoreVisitReportsController;
 use App\Http\Controllers\Api\StoreVisitsController;
@@ -41,6 +45,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('store-assignments/{storeId}/{userId}/{assignedFrom}', [StoreAssignmentsController::class, 'update'])->middleware('permission:assignments.manage');
     Route::delete('store-assignments/{storeId}/{userId}/{assignedFrom}', [StoreAssignmentsController::class, 'destroy'])->middleware('permission:assignments.manage');
     Route::apiResource('store-status-history', StoreStatusHistoryController::class)->middleware('permission:status_history.manage');
+    Route::apiResource('store-statuses', StoreStatusesController::class)->middleware('permission:store_statuses.manage');
+    Route::apiResource('condition-types', StoreConditionTypesController::class)->middleware('permission:condition_types.manage');
+    Route::get('locations/countries', [LocationsController::class, 'countries']);
+    Route::get('locations/provinces', [LocationsController::class, 'provinces']);
+    Route::get('locations/cities', [LocationsController::class, 'cities']);
+    Route::get('locations/districts', [LocationsController::class, 'districts']);
+    Route::get('locations/villages', [LocationsController::class, 'villages']);
+    Route::get('locations/google/autocomplete', [GoogleLocationsController::class, 'autocomplete']);
+    Route::get('locations/google/details', [GoogleLocationsController::class, 'details']);
 
     Route::apiResource('store-visits', StoreVisitsController::class)->middleware('permission:visits.manage');
     Route::apiResource('store-visit-reports', StoreVisitReportsController::class)->middleware('permission:visit_reports.manage');

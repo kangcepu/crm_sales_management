@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Store;
+use App\Models\StoreStatus;
 use App\Models\StoreStatusHistory;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -19,9 +20,11 @@ class StoreStatusHistorySeeder extends Seeder
             return;
         }
 
+        $activeStatus = StoreStatus::where('code', 'ACTIVE')->first();
         foreach (Store::all() as $store) {
             StoreStatusHistory::create([
                 'store_id' => $store->id,
+                'store_status_id' => $activeStatus?->id,
                 'status' => 'ACTIVE',
                 'note' => 'Initial activation',
                 'changed_by_user_id' => $supervisor->id,

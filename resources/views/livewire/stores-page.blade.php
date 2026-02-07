@@ -71,6 +71,72 @@
                 </div>
 
                 <div class="form-grid" style="margin-top: 12px;">
+                    <div class="form-group form-group-full">
+                        <label class="label">Search Address (OSM)</label>
+                        <input class="input" type="text" wire:model.live.debounce.400ms="addressSearch" placeholder="Type address or place">
+                        @if($addressNotice)
+                            <span class="helper">{{ $addressNotice }}</span>
+                        @endif
+                        @if($addressResults)
+                            <div class="suggestions">
+                                @foreach($addressResults as $result)
+                                    <button type="button" class="suggestion-item" wire:click="selectAddressResult({{ $result['lat'] }}, {{ $result['lng'] }})">
+                                        {{ $result['label'] }}
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Country</label>
+                        <select class="select" wire:model="address.country_id">
+                            <option value="">Select country</option>
+                            @foreach($countries as $country)
+                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('address.country_id') <span>{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Province</label>
+                        <select class="select" wire:model="address.province_id">
+                            <option value="">Select province</option>
+                            @foreach($provinces as $province)
+                                <option value="{{ $province->id }}">{{ $province->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('address.province_id') <span>{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="label">City</label>
+                        <select class="select" wire:model="address.city_id">
+                            <option value="">Select city</option>
+                            @foreach($cities as $city)
+                                <option value="{{ $city->id }}">{{ $city->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('address.city_id') <span>{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="label">District</label>
+                        <select class="select" wire:model="address.district_id">
+                            <option value="">Select district</option>
+                            @foreach($districts as $district)
+                                <option value="{{ $district->id }}">{{ $district->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('address.district_id') <span>{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Village</label>
+                        <select class="select" wire:model="address.village_id">
+                            <option value="">Select village</option>
+                            @foreach($villages as $village)
+                                <option value="{{ $village->id }}">{{ $village->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('address.village_id') <span>{{ $message }}</span> @enderror
+                    </div>
                     <div class="form-group">
                         <label class="label">Address</label>
                         <input class="input" type="text" wire:model="address.address">
@@ -78,12 +144,12 @@
                     </div>
                     <div class="form-group">
                         <label class="label">City</label>
-                        <input class="input" type="text" wire:model="address.city">
+                        <input class="input" type="text" wire:model="address.city" readonly>
                         @error('address.city') <span>{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
                         <label class="label">Province</label>
-                        <input class="input" type="text" wire:model="address.province">
+                        <input class="input" type="text" wire:model="address.province" readonly>
                         @error('address.province') <span>{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">

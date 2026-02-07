@@ -144,7 +144,7 @@
                 </nav>
             </div>
         @endif
-        @if($user && $user->hasAnyPermission(['users.manage','roles.manage','settings.manage','stores.manage','assignments.manage','areas.manage','area_mapping.view']))
+        @if($user && $user->hasAnyPermission(['users.manage','roles.manage','settings.manage','stores.manage','assignments.manage','areas.manage','area_mapping.view','store_statuses.manage','condition_types.manage']))
             <div class="nav-section">
                 <div class="nav-label">Master Data</div>
                 <nav class="nav">
@@ -168,6 +168,28 @@
                                 </svg>
                             </span>
                             <span>Roles</span>
+                        </a>
+                    @endif
+                    @if($user->hasPermission('store_statuses.manage'))
+                        <a class="nav-link {{ request()->routeIs('store-statuses') ? 'active' : '' }}" href="{{ route('store-statuses') }}" wire:navigate>
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M4 7h16M4 12h16M4 17h16"/>
+                                    <circle cx="9" cy="7" r="2"/>
+                                </svg>
+                            </span>
+                            <span>Status Toko</span>
+                        </a>
+                    @endif
+                    @if($user->hasPermission('condition_types.manage'))
+                        <a class="nav-link {{ request()->routeIs('condition-types') ? 'active' : '' }}" href="{{ route('condition-types') }}" wire:navigate>
+                            <span class="nav-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                    <path d="M4 6h16v12H4z"/>
+                                    <path d="M8 10h8M8 14h5"/>
+                                </svg>
+                            </span>
+                            <span>Kondisi Toko</span>
                         </a>
                     @endif
                     @if($user->hasPermission('settings.manage'))
@@ -303,12 +325,15 @@ function initThemeToggle() {
 
 let storeMap
 let storeMarker
+let reverseTimer
 
 function initStoreMap() {
     const el = document.getElementById('store-map')
     if (!el || !window.L) {
         return
     }
+    const componentEl = el.closest('[wire\\:id]')
+    const componentId = componentEl ? componentEl.getAttribute('wire:id') : null
     if (storeMap && storeMap._container !== el) {
         storeMap.remove()
         storeMap = null
@@ -345,6 +370,7 @@ function initStoreMap() {
             lngInput.value = Number(lng).toFixed(7)
             lngInput.dispatchEvent(new Event('input', { bubbles: true }))
         }
+        scheduleReverse(lat, lng)
     }
 
     function syncFromInputs() {
@@ -353,11 +379,25 @@ function initStoreMap() {
         if (Number.isFinite(lat) && Number.isFinite(lng)) {
             storeMarker.setLatLng([lat, lng])
             storeMap.setView([lat, lng], storeMap.getZoom())
+            scheduleReverse(lat, lng)
         }
     }
 
     latInput?.addEventListener('change', syncFromInputs)
     lngInput?.addEventListener('change', syncFromInputs)
+
+    function scheduleReverse(lat, lng) {
+        if (!componentId || !window.Livewire) {
+            return
+        }
+        clearTimeout(reverseTimer)
+        reverseTimer = setTimeout(function () {
+            const component = window.Livewire.find(componentId)
+            if (component) {
+                component.call('reverseGeocode', Number(lat), Number(lng))
+            }
+        }, 600)
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function () {

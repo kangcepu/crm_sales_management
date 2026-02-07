@@ -636,6 +636,57 @@ body.theme-dark .theme-toggle .moon {
     gap: 6px;
 }
 
+.form-group-full {
+    grid-column: 1 / -1;
+}
+
+.helper {
+    font-size: 12px;
+    color: #667085;
+}
+
+.suggestions {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    overflow: auto;
+    background: #fff;
+}
+
+.suggestion-item {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 13px;
+    color: #1f2937;
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background: #eef2ff;
+    border-color: #dbeafe;
+}
+
+body.theme-dark .suggestions {
+    background: #0b1220;
+}
+
+body.theme-dark .suggestion-item {
+    background: #111827;
+    color: #e2e8f0;
+}
+
+body.theme-dark .suggestion-item:hover {
+    background: #1f2937;
+    border-color: #334155;
+}
+
 .label {
     font-size: 12px;
     text-transform: uppercase;

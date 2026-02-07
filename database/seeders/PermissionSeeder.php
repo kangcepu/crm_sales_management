@@ -18,6 +18,8 @@ class PermissionSeeder extends Seeder
             ['key' => 'areas.manage', 'name' => 'Manage Areas'],
             ['key' => 'area_mapping.view', 'name' => 'View Area Mapping'],
             ['key' => 'status_history.manage', 'name' => 'Manage Status History'],
+            ['key' => 'store_statuses.manage', 'name' => 'Manage Store Statuses'],
+            ['key' => 'condition_types.manage', 'name' => 'Manage Store Condition Types'],
             ['key' => 'visits.manage', 'name' => 'Manage Visits'],
             ['key' => 'visit_reports.manage', 'name' => 'Manage Visit Reports'],
             ['key' => 'report_tracking.view', 'name' => 'View Report Tracking'],

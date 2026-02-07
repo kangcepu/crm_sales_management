@@ -29,6 +29,12 @@ class StoreStatusHistoryController extends Controller
             $status = StoreStatus::find($data['store_status_id']);
             $data['status'] = $status?->code;
         }
+        if (empty($data['store_status_id']) && !empty($data['status'])) {
+            $status = StoreStatus::where('code', $data['status'])->first();
+            if ($status) {
+                $data['store_status_id'] = $status->id;
+            }
+        }
         if (empty($data['status'])) {
             return response()->json(['message' => 'Status required'], 422);
         }
@@ -57,6 +63,12 @@ class StoreStatusHistoryController extends Controller
         if (!empty($data['store_status_id'])) {
             $status = StoreStatus::find($data['store_status_id']);
             $data['status'] = $status?->code;
+        }
+        if (empty($data['store_status_id']) && !empty($data['status'])) {
+            $status = StoreStatus::where('code', $data['status'])->first();
+            if ($status) {
+                $data['store_status_id'] = $status->id;
+            }
         }
         if (empty($data['status'])) {
             return response()->json(['message' => 'Status required'], 422);

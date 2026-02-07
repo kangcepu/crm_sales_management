@@ -9,6 +9,8 @@ use App\Livewire\ReportTrackingPage;
 use App\Livewire\RolesPage;
 use App\Livewire\AreasPage;
 use App\Livewire\AreaMappingPage;
+use App\Livewire\StoreStatusesPage;
+use App\Livewire\StoreConditionTypesPage;
 use App\Livewire\StoreAssignmentsPage;
 use App\Livewire\StoreConditionsPage;
 use App\Livewire\StoreMediaPage;
@@ -35,6 +37,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/users', UsersPage::class)->name('users')->middleware('permission:users.manage');
     Route::get('/roles', RolesPage::class)->name('roles')->middleware('permission:roles.manage');
     Route::get('/settings', SettingsPage::class)->name('settings')->middleware('permission:settings.manage');
+    Route::get('/store-statuses', StoreStatusesPage::class)->name('store-statuses')->middleware('permission:store_statuses.manage');
+    Route::get('/condition-types', StoreConditionTypesPage::class)->name('condition-types')->middleware('permission:condition_types.manage');
 
     Route::get('/stores', StoresPage::class)->name('stores')->middleware('permission:stores.manage');
     Route::get('/assignments', StoreAssignmentsPage::class)->name('assignments')->middleware('permission:assignments.manage');

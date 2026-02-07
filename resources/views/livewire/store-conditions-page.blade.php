@@ -23,6 +23,16 @@
                         @error('form.visit_id') <span>{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
+                        <label class="label">Condition Type</label>
+                        <select class="select" wire:model="form.condition_type_id">
+                            <option value="">Select type</option>
+                            @foreach($types as $type)
+                                <option value="{{ $type->id }}">{{ $type->code }} - {{ $type->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('form.condition_type_id') <span>{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
                         <label class="label">Exterior</label>
                         <select class="select" wire:model="form.exterior_condition">
                             <option value="GOOD">GOOD</option>
@@ -52,12 +62,8 @@
                     </div>
                     <div class="form-group">
                         <label class="label">Overall Status</label>
-                        <select class="select" wire:model="form.overall_status">
-                            <option value="ACTIVE">ACTIVE</option>
-                            <option value="RISK">RISK</option>
-                            <option value="POTENTIAL">POTENTIAL</option>
-                            <option value="DROPPED">DROPPED</option>
-                        </select>
+                        <input class="input" type="text" wire:model="form.overall_status" placeholder="ACTIVE">
+                        @error('form.overall_status') <span>{{ $message }}</span> @enderror
                     </div>
                 </div>
                 <div class="table-actions" style="margin-top: 12px;">
@@ -73,6 +79,7 @@
             <thead>
                 <tr>
                     <th>Visit</th>
+                    <th>Type</th>
                     <th>Exterior</th>
                     <th>Interior</th>
                     <th>Overall</th>
@@ -83,6 +90,7 @@
                 @foreach($items as $item)
                     <tr>
                         <td>{{ $item->visit?->store?->store_name }}</td>
+                        <td>{{ $item->conditionType?->name ?? '-' }}</td>
                         <td>{{ $item->exterior_condition }}</td>
                         <td>{{ $item->interior_condition }}</td>
                         <td>{{ $item->overall_status }}</td>

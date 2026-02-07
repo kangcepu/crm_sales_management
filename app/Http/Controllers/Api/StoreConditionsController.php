@@ -31,6 +31,12 @@ class StoreConditionsController extends Controller
             $type = StoreConditionType::find($data['condition_type_id']);
             $data['overall_status'] = $type?->code;
         }
+        if (empty($data['condition_type_id']) && !empty($data['overall_status'])) {
+            $type = StoreConditionType::where('code', $data['overall_status'])->first();
+            if ($type) {
+                $data['condition_type_id'] = $type->id;
+            }
+        }
         if (empty($data['overall_status'])) {
             return response()->json(['message' => 'Overall status required'], 422);
         }
@@ -61,6 +67,12 @@ class StoreConditionsController extends Controller
         if (!empty($data['condition_type_id'])) {
             $type = StoreConditionType::find($data['condition_type_id']);
             $data['overall_status'] = $type?->code;
+        }
+        if (empty($data['condition_type_id']) && !empty($data['overall_status'])) {
+            $type = StoreConditionType::where('code', $data['overall_status'])->first();
+            if ($type) {
+                $data['condition_type_id'] = $type->id;
+            }
         }
         if (empty($data['overall_status'])) {
             return response()->json(['message' => 'Overall status required'], 422);

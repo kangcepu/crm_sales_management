@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Store;
+use App\Models\City;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
@@ -35,12 +37,30 @@ class StoresController extends Controller
             'phone' => 'required|string|max:50',
             'is_active' => 'boolean',
             'address' => 'required|array',
+            'address.country_id' => 'nullable|exists:countries,id',
+            'address.province_id' => 'nullable|exists:provinces,id',
+            'address.city_id' => 'nullable|exists:cities,id',
+            'address.district_id' => 'nullable|exists:districts,id',
+            'address.village_id' => 'nullable|exists:villages,id',
             'address.address' => 'required|string|max:255',
-            'address.city' => 'required|string|max:255',
-            'address.province' => 'required|string|max:255',
+            'address.city' => 'required_without:address.city_id|string|max:255',
+            'address.province' => 'required_without:address.province_id|string|max:255',
             'address.latitude' => 'nullable|numeric',
             'address.longitude' => 'nullable|numeric'
         ]);
+
+        if (!empty($data['address']['city_id'])) {
+            $city = City::find($data['address']['city_id']);
+            if ($city) {
+                $data['address']['city'] = $city->name;
+            }
+        }
+        if (!empty($data['address']['province_id'])) {
+            $province = Province::find($data['address']['province_id']);
+            if ($province) {
+                $data['address']['province'] = $province->name;
+            }
+        }
 
         $store = Store::create(Arr::except($data, ['address']));
         $store->address()->create($data['address']);
@@ -72,12 +92,30 @@ class StoresController extends Controller
             'phone' => 'required|string|max:50',
             'is_active' => 'boolean',
             'address' => 'required|array',
+            'address.country_id' => 'nullable|exists:countries,id',
+            'address.province_id' => 'nullable|exists:provinces,id',
+            'address.city_id' => 'nullable|exists:cities,id',
+            'address.district_id' => 'nullable|exists:districts,id',
+            'address.village_id' => 'nullable|exists:villages,id',
             'address.address' => 'required|string|max:255',
-            'address.city' => 'required|string|max:255',
-            'address.province' => 'required|string|max:255',
+            'address.city' => 'required_without:address.city_id|string|max:255',
+            'address.province' => 'required_without:address.province_id|string|max:255',
             'address.latitude' => 'nullable|numeric',
             'address.longitude' => 'nullable|numeric'
         ]);
+
+        if (!empty($data['address']['city_id'])) {
+            $city = City::find($data['address']['city_id']);
+            if ($city) {
+                $data['address']['city'] = $city->name;
+            }
+        }
+        if (!empty($data['address']['province_id'])) {
+            $province = Province::find($data['address']['province_id']);
+            if ($province) {
+                $data['address']['province'] = $province->name;
+            }
+        }
 
         $store->update(Arr::except($data, ['address']));
         if ($store->address) {

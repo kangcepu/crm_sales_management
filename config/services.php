@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'google' => [
+        'maps_key' => env('GOOGLE_MAPS_API_KEY'),
+        'maps_country' => env('GOOGLE_MAPS_COUNTRY', 'ID'),
+        'maps_language' => env('GOOGLE_MAPS_LANGUAGE', 'id'),
+        'maps_region' => env('GOOGLE_MAPS_REGION', 'ID'),
+    ],
+
+    'nominatim' => [
+        'base_url' => env('OSM_NOMINATIM_URL', 'https://nominatim.openstreetmap.org'),
+        'email' => env('OSM_NOMINATIM_EMAIL'),
+        'language' => env('OSM_NOMINATIM_LANGUAGE', 'id'),
+    ],
+
 ];

@@ -66,6 +66,12 @@ class StoreStatusHistoryPage extends Component
             $status = StoreStatus::find($data['form']['store_status_id']);
             $data['form']['status'] = $status?->code;
         }
+        if (empty($data['form']['store_status_id']) && !empty($data['form']['status'])) {
+            $status = StoreStatus::where('code', $data['form']['status'])->first();
+            if ($status) {
+                $data['form']['store_status_id'] = $status->id;
+            }
+        }
         if (empty($data['form']['status'])) {
             $this->addError('form.status', 'Status required');
             return;
@@ -106,6 +112,16 @@ class StoreStatusHistoryPage extends Component
         $this->resetValidation();
     }
 
+    public function updatedFormStoreStatusId()
+    {
+        if (!empty($this->form['store_status_id'])) {
+            $status = StoreStatus::find($this->form['store_status_id']);
+            if ($status) {
+                $this->form['status'] = $status->code;
+            }
+        }
+    }
+
     private function formatDateTime($value): string
     {
         if (!$value) {
@@ -117,7 +133,7 @@ class StoreStatusHistoryPage extends Component
     public function render()
     {
         return view('livewire.store-status-history-page', [
-            'items' => StoreStatusHistory::with(['store', 'changedBy'])->orderByDesc('changed_at')->paginate(10),
+            'items' => StoreStatusHistory::with(['store', 'changedBy', 'statusRef'])->orderByDesc('changed_at')->paginate(10),
             'statuses' => StoreStatus::orderBy('name')->get(),
             'stores' => Store::orderBy('store_name')->get(),
             'users' => User::orderBy('full_name')->get()
